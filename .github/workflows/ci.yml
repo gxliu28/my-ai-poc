@@ -91,6 +91,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Create output directory
+        run: |
+          mkdir -p output_dir
+
       - name: Evaluate model
         run: |
           python scripts/evaluate_model.py --input_text 'What is the importance of a balanced diet?'
