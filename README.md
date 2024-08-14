@@ -1,7 +1,7 @@
 ## my-ai-poc
 Build a Retrieval-Augmented Generation (RAG) system.
 
-Components:
+Components
 
 - Train Model: Use train_model.py to train a text generation model.
 - Evaluate Model: Use evaluate_model.py to generate and test responses.
@@ -10,6 +10,9 @@ Test Code Features:
 
 - Train Model Test: Verify the training process and ensure the model learns from the provided data.
 - Evaluate Model Test: Check the model's ability to generate relevant and accurate responses based on different inputs.
+
+## Test Result
+[![CI Pipeline](https://github.com/gxliu28/my-ai-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/gxliu28/my-ai-poc/actions/workflows/ci.yml)
 
 ## Installation 
 - Setting up a virtual environment
