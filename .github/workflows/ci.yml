@@ -37,8 +37,17 @@ jobs:
 
       - name: Run tests in parallel
         run: |
-          pytest --maxfail=1 --disable-warnings -q # Run tests in the background
+          #pytest --maxfail=1 --disable-warnings -q # Run tests in the background
+          mkdir -p test-reports
+          pytest --maxfail=1 --disable-warnings -q --junitxml=test-reports/results.xml & # Run tests in the background
           wait  # Wait for all background processes to complete
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-reports/results.xml
 
       - name: Evaluate model
         if: steps.train_model.outcome == 'success'
