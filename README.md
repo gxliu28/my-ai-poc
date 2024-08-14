@@ -224,8 +224,9 @@ Test Code Features:
   </details>
 
 ## Creating automated CI workflows for GitHub.com
+
 ```sh
-name: CI
+name: CI Pipeline
 
 on:
   push:
@@ -238,28 +239,47 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        id: build
 
-    - name: Run unit tests
-      run: |
-        pytest --maxfail=1 --disable-warnings -q
+      - name: Create output directory
+        run: |
+          mkdir -p output_dir
 
-    - name: Run evaluate_model test
-      run: |
-        python test/evaluate_model_test.py
+      - name: Train model
+        id: train_model
+        run: |
+          python scripts/train_model.py --data_path test/test_sample.txt --output_dir output_dir --model_path gpt2 --tokenizer_path gpt2 --epochs 5 --batch_size 16 --learning_rate 5e-5
+
+      - name: Run tests in parallel
+        run: |
+          mkdir -p test-reports
+          pytest --maxfail=1 --disable-warnings -q --junitxml=test-reports/results.xml & # Run tests in the background
+          wait  # Wait for all background processes to complete
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-reports/results.xml
+
+      - name: Evaluate model
+        if: steps.train_model.outcome == 'success'
+        run: |
+          python scripts/evaluate_model.py --input_text 'What is the importance of a balanced diet?'
 ```
 
 ## Training
